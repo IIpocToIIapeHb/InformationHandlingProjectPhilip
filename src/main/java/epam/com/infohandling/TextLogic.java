@@ -22,20 +22,30 @@ public class TextLogic {
     }
 
     public Composite calculate(Composite text, Map<String,Double> parameters){
+        ExpressionCalculator calculator = new ExpressionCalculator();
 
         List<Component> paragraphs = text.getChildren();
         for (Component paragraph : paragraphs) {
             List<Component> sentances = ((Composite) paragraph).getChildren();
             for (Component sentence : sentances) {
                 List<Component> lexemes = ((Composite) sentence).getChildren();
-                for (Component lexeme : lexemes) {
-                    System.out.println((Lexeme) lexeme);
+                for (Component componentlexeme : lexemes) {
+                    Lexeme lexeme = (Lexeme) componentlexeme;
+                    System.out.println(lexeme);
+                    if (lexeme.getType() == LexemeType.EXPRESSION){
+                        String expression = lexeme.getValue();
+                        double resultOfExpression = calculator.calculate(expression,parameters);
+                        String stringResultOfExpression = ((Double)resultOfExpression).toString();
+                        lexeme.setValue(stringResultOfExpression);
+                        lexeme.setType(LexemeType.WORD);
+                    }
+
                 }
 
 
             }
         }
-        return null;
+        return text;
     }
 
 }

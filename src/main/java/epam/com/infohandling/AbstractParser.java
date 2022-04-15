@@ -7,6 +7,8 @@ public abstract class AbstractParser implements Parser {
     public AbstractParser(Parser successor) {
         this.successor = successor;
     }
+    public AbstractParser() {
+    }
 
     protected Parser getSuccessor(){
         return successor;

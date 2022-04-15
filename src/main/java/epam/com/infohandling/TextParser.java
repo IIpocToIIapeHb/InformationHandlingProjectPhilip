@@ -6,6 +6,8 @@ public class TextParser extends AbstractParser {
     public TextParser(Parser successor) {
         super(successor);
     }
+    public TextParser() {
+    }
 
     @Override
     public Component parse(String text) {

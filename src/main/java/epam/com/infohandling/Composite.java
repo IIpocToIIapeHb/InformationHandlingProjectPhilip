@@ -9,4 +9,8 @@ public class Composite implements Component{
     public void add(Component child){
         children.add(child);
     }
+
+    public List<Component> getChildren() {
+        return children;
+    }
 }

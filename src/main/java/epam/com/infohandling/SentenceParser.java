@@ -2,21 +2,31 @@ package epam.com.infohandling;
 
 public class SentenceParser extends AbstractParser {
 
-    public SentenceParser(Parser successor) {
-        super(successor);
+    public SentenceParser() {
     }
+
 
     @Override
     public Component parse(String sentense) {
         Composite composite = new Composite();
         String[] parts = sentense.split("(\\[|\\])");
-        for (int i=0; i<parts.length;i+=2){
 
-            String[] words = parts[i].split("\\s");
+        for (int i=0; i<parts.length; i++) {
 
-            Component paragraph = getSuccessor().parse(part);
-            composite.add(paragraph);
+            if (i % 2 == 0) {
+
+                String[] words = parts[i].trim().split("\\s");
+
+                for (String parseWord : words) {
+                    Lexeme wordLexeme = Lexeme.word(parseWord);
+                    composite.add(wordLexeme);
+                }
+            } else {
+                Lexeme expressionLexeme = Lexeme.expression(parts[i]);
+                composite.add(expressionLexeme);
+            }
         }
+
         return composite;
     }
 }

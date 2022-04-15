@@ -10,12 +10,24 @@ public class Lexeme implements Component {
         this.type = type;
     }
 
-    public static Lexeme word(String value){
+    public static Lexeme word(String value) {
         return new Lexeme(value, LexemeType.WORD);
     }
 
-    public static Lexeme word(String value){
+    public static Lexeme expression(String value) {
         return new Lexeme(value, LexemeType.EXPRESSION);
     }
 
+/*    @Override
+    public String toString() {
+        return "Lexeme{" +
+                "value='" + value + '\'' +
+                ", type=" + type +
+                '}';
+    }*/
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

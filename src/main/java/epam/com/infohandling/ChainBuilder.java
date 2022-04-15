@@ -3,6 +3,6 @@ package epam.com.infohandling;
 public class ChainBuilder {
 
     public Parser build(){
-        return new TextParser(new ParagraphParser(null));
+        return new TextParser(new ParagraphParser(new SentenceParser()));
     }
 }

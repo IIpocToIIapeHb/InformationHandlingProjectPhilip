@@ -34,16 +34,32 @@ public class Lexeme implements Component {
         this.type = type;
     }
 
-    /*    @Override
-    public String toString() {
-        return "Lexeme{" +
-                "value='" + value + '\'' +
-                ", type=" + type +
-                '}';
-    }*/
-
     @Override
     public String toString() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
+
+        Lexeme lexeme = (Lexeme) o;
+
+        if (!value.equals(lexeme.value)){
+            return false;
+        }
+        return type == lexeme.type;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = value.hashCode();
+        result = 31 * result + type.hashCode();
+        return result;
     }
 }

@@ -15,11 +15,11 @@ import java.util.Map;
 public class TextLogic {
 
     public Composite parse(String path) throws TextLogicException {
-        String text=null;
+        String text = null;
         try {
             text = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new TextLogicException(e.getMessage(),e);
+            throw new TextLogicException(e.getMessage(), e);
         }
         ChainBuilder chainBuilder = new ChainBuilder();
         Parser textParser = chainBuilder.build();
@@ -28,7 +28,63 @@ public class TextLogic {
     }
 
 
-    public Composite calculate(Composite text, Map<String,Integer> parameters){
+    public Composite calculate(Composite text, Map<String, Integer> parameters) {
+        Composite newText = cloneTextComposite(text);
+
+        List<Component> paragraphs = newText.getChildren();
+        for (Component paragraph : paragraphs) {
+            List<Component> sentences = ((Composite) paragraph).getChildren();
+
+            for (Component sentence : sentences) {
+                List<Component> lexemes = ((Composite) sentence).getChildren();
+
+                for (Component componentlexeme : lexemes) {
+                    Lexeme lexeme = (Lexeme) componentlexeme;
+                    if (lexeme.getType() == LexemeType.EXPRESSION) {
+                        calculateLexemeExpressionIntoLexemeWord(lexeme, parameters);
+
+                    }
+                }
+
+            }
+
+        }
+        return newText;
+    }
+
+
+    private void calculateLexemeExpressionIntoLexemeWord(Lexeme lexeme, Map<String, Integer> parameters) {
+        ExpressionCalculator calculator = new ExpressionCalculator();
+        String expression = lexeme.getValue();
+        double resultOfExpression = calculator.calculate(expression, parameters);
+        String stringResultOfExpression = ((Double) resultOfExpression).toString();
+        lexeme.setType(LexemeType.WORD);
+        lexeme.setValue(stringResultOfExpression);
+
+    }
+
+    public Composite sortByParagraphs(Composite text) {
+        Composite newText = cloneTextComposite(text);
+        List<Component> list = newText.getChildren();
+        ParagraphComparator comparator = new ParagraphComparator();
+        Collections.sort(list, comparator);
+        return newText;
+    }
+
+    public Composite sortByWords(Composite text) {
+        Composite newText = cloneTextComposite(text);
+        WordComparator comparator = new WordComparator();
+        List<Component> paragraphs = newText.getChildren();
+        for (Component paragraph : paragraphs) {
+            List<Component> sentences = ((Composite) paragraph).getChildren();
+            for (Component sentence : sentences) {
+                Collections.sort(((Composite) sentence).getChildren(), comparator);
+            }
+        }
+        return newText;
+    }
+
+    private Composite cloneTextComposite(Composite text) {
         Composite newText = new Composite();
 
         List<Component> paragraphs = text.getChildren();
@@ -42,49 +98,16 @@ public class TextLogic {
                 Composite newSentence = new Composite();
                 for (Component componentlexeme : lexemes) {
                     Lexeme lexeme = (Lexeme) componentlexeme;
-                    if (lexeme.getType() == LexemeType.WORD){
-                        Lexeme newLexeme = Lexeme.word(lexeme.getValue());
-                        newSentence.add(newLexeme);
-                    } else
-                        if (lexeme.getType() == LexemeType.EXPRESSION){
-                        Lexeme newLexeme = calculateLexemeExpressionIntoLexemeWord(lexeme,parameters);
-                        newSentence.add(newLexeme);
-                    }
+
+                    newSentence.add(lexeme.clone());
                 }
                 newParagraph.add(newSentence);
             }
             newText.add(newParagraph);
         }
+
         return newText;
-    }
 
-
-    private Lexeme calculateLexemeExpressionIntoLexemeWord(Lexeme lexeme, Map<String,Integer> parameters){
-        ExpressionCalculator calculator = new ExpressionCalculator();
-        String expression = lexeme.getValue();
-        double resultOfExpression = calculator.calculate(expression,parameters);
-        String stringResultOfExpression = ((Double)resultOfExpression).toString();
-        Lexeme newLexeme = Lexeme.word(stringResultOfExpression);
-        return newLexeme;
-
-    }
-
-    public void sortByParagraphs(Composite text){
-        List<Component> list=text.getChildren();
-        ParagraphComparator comparator=new ParagraphComparator();
-        Collections.sort(list,comparator);
-    }
-
-    public void sortByWords(Composite text) {
-        WordComparator comparator = new WordComparator();
-
-        List<Component> paragraphs = text.getChildren();
-        for (Component paragraph : paragraphs) {
-            List<Component> sentences = ((Composite) paragraph).getChildren();
-            for (Component sentence : sentences) {
-                Collections.sort(((Composite)sentence).getChildren(), comparator);
-            }
-        }
     }
 
 }

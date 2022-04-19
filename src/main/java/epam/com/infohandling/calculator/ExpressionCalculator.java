@@ -8,7 +8,7 @@ public class ExpressionCalculator {
 
     private ArrayList<AbstractMathExpression> listExpression = new ArrayList<>();
     private final static String EXPRESSION_DELIMITER = "\\s+";
-    private final static String LITERAL_PARAMETERS = "(x|y)";
+    private final static String LITERAL_PARAMETERS = "[a-z]";
 
     public double calculate(String expression, Map<String, Integer> parameters) {
         listExpression.clear();

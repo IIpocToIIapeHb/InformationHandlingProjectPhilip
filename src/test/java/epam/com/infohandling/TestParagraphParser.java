@@ -13,7 +13,7 @@ public class TestParagraphParser {
             "Can you give me one of them? Yes, of course!";
 
     @Test
-    public void testParseShouldReturnCompositeOfLexemes() {
+    public void testParseShouldReturnCompositeOfSentences() {
         //given
         Composite expectedComposite = new Composite();
 

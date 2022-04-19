@@ -1,6 +1,6 @@
 package epam.com.infohandling;
 
-public class Lexeme implements Component {
+public class Lexeme implements Component, Cloneable {
 
     private String value;
     private LexemeType type;
@@ -9,6 +9,9 @@ public class Lexeme implements Component {
         this.value = value;
         this.type = type;
     }
+    private Lexeme() {
+    }
+
 
     public static Lexeme word(String value) {
         return new Lexeme(value, LexemeType.WORD);
@@ -61,5 +64,12 @@ public class Lexeme implements Component {
         int result = value.hashCode();
         result = 31 * result + type.hashCode();
         return result;
+    }
+
+    public Lexeme clone() {
+        Lexeme lexeme = new Lexeme();
+        lexeme.value = this.value;
+        lexeme.type = this.type;
+        return lexeme;
     }
 }

@@ -22,15 +22,7 @@ public class TestParagraphParser {
     @Test
     public void testParseShouldReturnCompositeOfSentences() {
         //given
-        Composite expectedComposite = new Composite();
-
-        Composite firstSentence = createSentenceComposite();
-        Composite secondSentence =  createSentenceComposite();
-        Composite thirdSentence = createSentenceComposite();
-
-        expectedComposite.add(firstSentence);
-        expectedComposite.add(secondSentence);
-        expectedComposite.add(thirdSentence);
+        Composite expectedParagraphComposite = createParagraphComposite();
 
         SentenceParser sentenceParserMock = Mockito.mock(SentenceParser.class);
         when(sentenceParserMock.parse(anyString())).thenReturn(SENTENCE);
@@ -39,7 +31,7 @@ public class TestParagraphParser {
         //when
         Composite realComposite = (Composite) paragraphParser.parse(PARAGRAPH);
         //then
-        assertEquals(expectedComposite,realComposite);
+        assertEquals(expectedParagraphComposite,realComposite);
     }
 
     private static Composite createSentenceComposite(){
@@ -47,5 +39,19 @@ public class TestParagraphParser {
         sentence.add(Lexeme.word("FIRST_SENTENCE_LEXEME"));
         sentence.add(Lexeme.word("SECOND_SENTENCE_LEXEME"));
         return sentence;
+    }
+
+    private static Composite createParagraphComposite(){
+        Composite expectedParagraphComposite = new Composite();
+
+        Composite firstSentence = createSentenceComposite();
+        Composite secondSentence =  createSentenceComposite();
+        Composite thirdSentence = createSentenceComposite();
+
+        expectedParagraphComposite.add(firstSentence);
+        expectedParagraphComposite.add(secondSentence);
+        expectedParagraphComposite.add(thirdSentence);
+
+        return expectedParagraphComposite;
     }
 }

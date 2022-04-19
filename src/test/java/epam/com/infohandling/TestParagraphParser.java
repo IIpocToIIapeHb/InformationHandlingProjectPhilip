@@ -1,52 +1,51 @@
 package epam.com.infohandling;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 public class TestParagraphParser {
 
 
-    private static final String PARAGRAPH = "There are [1200 5 /] sweets in the box. " +
-            "Can you give me one of them? Yes, of course!";
+    private static final String PARAGRAPH = "Hello, world! Hello, world. Hello, world?";
+
+    private static final Composite SENTENCE = createSentenceComposite();
+    private static final String FIRST_SENTENCE_LEXEME = "Hello,";
+    private static final String SECOND_SENTENCE_LEXEME = "world";
 
     @Test
     public void testParseShouldReturnCompositeOfSentences() {
         //given
         Composite expectedComposite = new Composite();
 
-        Composite firstSentence = new Composite();
-        firstSentence.add(Lexeme.word("There"));
-        firstSentence.add(Lexeme.word("are"));
-        firstSentence.add(Lexeme.expression("1200 5 /"));
-        firstSentence.add(Lexeme.word("sweets"));
-        firstSentence.add(Lexeme.word("in"));
-        firstSentence.add(Lexeme.word("the"));
-        firstSentence.add(Lexeme.word("box"));
+        Composite firstSentence = createSentenceComposite();
+        Composite secondSentence =  createSentenceComposite();
+        Composite thirdSentence = createSentenceComposite();
+
         expectedComposite.add(firstSentence);
-
-        Composite secondSentence = new Composite();
-        secondSentence.add(Lexeme.word("Can"));
-        secondSentence.add(Lexeme.word("you"));
-        secondSentence.add(Lexeme.expression("give"));
-        secondSentence.add(Lexeme.word("me"));
-        secondSentence.add(Lexeme.word("one"));
-        secondSentence.add(Lexeme.word("of"));
-        secondSentence.add(Lexeme.word("them"));
         expectedComposite.add(secondSentence);
-
-        Composite thirdSentence = new Composite();
-        thirdSentence.add(Lexeme.word("Yes,"));
-        thirdSentence.add(Lexeme.word("of"));
-        thirdSentence.add(Lexeme.expression("course"));
         expectedComposite.add(thirdSentence);
 
-        ParagraphParser paragraphParser = new ParagraphParser(new SentenceParser());
+        SentenceParser sentenceParserMock = Mockito.mock(SentenceParser.class);
+        when(sentenceParserMock.parse(anyString())).thenReturn(SENTENCE);
+
+        ParagraphParser paragraphParser = new ParagraphParser(sentenceParserMock);
         //when
         Composite realComposite = (Composite) paragraphParser.parse(PARAGRAPH);
         //then
         assertEquals(expectedComposite,realComposite);
+    }
+
+    private static Composite createSentenceComposite(){
+        Composite sentence = new Composite();
+        sentence.add(Lexeme.word("FIRST_SENTENCE_LEXEME"));
+        sentence.add(Lexeme.word("SECOND_SENTENCE_LEXEME"));
+        return sentence;
     }
 }

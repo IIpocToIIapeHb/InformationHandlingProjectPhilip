@@ -1,6 +1,7 @@
 package epam.com.infohandling;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -8,13 +9,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
 
 public class TestTextParser {
 
     private static final String PATH = "src/test/resources/TestText.txt";
 
+    private static final Composite PARAGRAPH = createParagraphComposite();
+    private static final String FIRST_SENTENCE_LEXEME = "Hello,";
+    private static final String SECOND_SENTENCE_LEXEME = "world";
+
     @Test
-    public void testParseShouldReturnCompositeOfLexemes() {
+    public void testParseShouldReturnCompositeOfParagraphs() {
         //given
         String text=null;
         try {
@@ -23,50 +30,42 @@ public class TestTextParser {
             e.printStackTrace();
         }
 
-        Composite expectedComposite = new Composite();
+        Composite expectedTextComposite =createExpectedTextComposite();
 
-        Composite firstParagraph = new Composite();
+        TextParser textParserMock = Mockito.mock(TextParser.class);
+        when(textParserMock.parse(anyString())).thenReturn(PARAGRAPH);
 
-        Composite firstSentence = new Composite();
-        firstSentence.add(Lexeme.word("There"));
-        firstSentence.add(Lexeme.word("are"));
-        firstSentence.add(Lexeme.expression("1200 5 /"));
-        firstSentence.add(Lexeme.word("sweets"));
-        firstSentence.add(Lexeme.word("in"));
-        firstSentence.add(Lexeme.word("the"));
-        firstSentence.add(Lexeme.word("box"));
-        firstParagraph.add(firstSentence);
-
-        Composite secondSentence = new Composite();
-        secondSentence.add(Lexeme.word("Can"));
-        secondSentence.add(Lexeme.word("you"));
-        secondSentence.add(Lexeme.expression("give"));
-        secondSentence.add(Lexeme.word("me"));
-        secondSentence.add(Lexeme.word("one"));
-        secondSentence.add(Lexeme.word("of"));
-        secondSentence.add(Lexeme.word("them"));
-        firstParagraph.add(secondSentence);
-
-        Composite thirdSentence = new Composite();
-        thirdSentence.add(Lexeme.word("Yes,"));
-        thirdSentence.add(Lexeme.word("of"));
-        thirdSentence.add(Lexeme.expression("course"));
-        firstParagraph.add(thirdSentence);
-
-        expectedComposite.add(firstParagraph);
-
-        Composite secondParagraph = new Composite();
-        Composite sentence = new Composite();
-        sentence.add(Lexeme.word("Bye"));
-        secondParagraph.add(sentence);
-
-        expectedComposite.add(secondParagraph);
-
-
-        TextParser textParser = new TextParser(new ParagraphParser(new SentenceParser()));
+        ParagraphParser textParser = new ParagraphParser(textParserMock);
         //when
-        Composite realComposite = (Composite) textParser.parse(text);
+        Composite realTextComposite = (Composite) textParser.parse(text);
         //then
-        assertEquals(expectedComposite,realComposite);
+        assertEquals(expectedTextComposite,realTextComposite);
+    }
+
+
+    private static Composite createParagraphComposite(){
+        Composite paragraph = new Composite();
+
+        Composite sentence = new Composite();
+        sentence.add(Lexeme.word("FIRST_SENTENCE_LEXEME"));
+        sentence.add(Lexeme.word("SECOND_SENTENCE_LEXEME"));
+
+        paragraph.add(sentence);
+
+        return paragraph;
+    }
+
+    private static Composite createExpectedTextComposite(){
+        Composite expectedTextComposite = new Composite();
+
+        Composite firstParagraph = createParagraphComposite();
+        Composite secondParagraph = createParagraphComposite();
+        Composite thirdParagraph = createParagraphComposite();
+
+        expectedTextComposite.add(firstParagraph);
+        expectedTextComposite.add(secondParagraph);
+        expectedTextComposite.add(thirdParagraph);
+
+        return expectedTextComposite;
     }
 }
